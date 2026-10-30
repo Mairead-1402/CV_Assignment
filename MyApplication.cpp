@@ -41,4 +41,13 @@ void MyApplication()
 		imshow("Greyscale", gs_images[i]);
 		waitKey(0);
 	}
+
+	// Next: Smooth the balls using Gaussian blur
+	Mat *bl_images = new Mat[number_of_images];
+	for (int i = 0; i < number_of_images; i++)
+	{
+		GaussianBlur(gs_images[i], bl_images[i], Size(5, 5), 1);
+		imshow("Blurred images", bl_images[i]);
+		waitKey(0);
+	}
 }
