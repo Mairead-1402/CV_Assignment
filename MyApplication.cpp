@@ -32,5 +32,13 @@ void MyApplication()
 		char pause = cv::waitKey(); // This introduces a delay between frame.  The length of the delay/number can be reduced.
 	}
 
-	//
+	// First Idea : Hough Circle Transform
+	// First: Greyscale the images
+	Mat *gs_images = new Mat[number_of_images];
+	for (int i = 0; i < number_of_images; i++)
+	{
+		cvtColor(pool_image[i], gs_images[i], cv::COLOR_BGR2GRAY);
+		imshow("Greyscale", gs_images[i]);
+		waitKey(0);
+	}
 }
