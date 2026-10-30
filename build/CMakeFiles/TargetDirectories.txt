@@ -1,0 +1,3 @@
+/Users/maireadodwyer/Downloads/OpenCVExample-2-2/build/CMakeFiles/OpenCVExample.dir
+/Users/maireadodwyer/Downloads/OpenCVExample-2-2/build/CMakeFiles/edit_cache.dir
+/Users/maireadodwyer/Downloads/OpenCVExample-2-2/build/CMakeFiles/rebuild_cache.dir
