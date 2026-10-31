@@ -50,4 +50,41 @@ void MyApplication()
 		imshow("Blurred images", bl_images[i]);
 		waitKey(0);
 	}
+
+	// Hough Circle Transform
+	for (int i = 0; i < number_of_images; i++)
+	{
+		vector<Vec3f> circles;
+		cv::HoughCircles(
+			bl_images[i],
+			circles,
+			cv::HOUGH_GRADIENT,
+			1, 35, 85, 15, 19, 25);
+
+		for (int j = 0; j < circles.size(); j++)
+		{
+			Vec3f c = circles[j];
+			Point center(c[0], c[1]);
+
+			circle(
+				pool_image[i],
+				center,
+				1,
+				Scalar(0, 100, 100),
+				3,
+				LINE_AA);
+
+			int radius = c[2];
+
+			circle(
+				pool_image[i],
+				center,
+				radius,
+				Scalar(255, 0, 255),
+				3,
+				LINE_AA);
+		}
+		imshow("Hough Transform Circles:", pool_image[i]);
+		waitKey(0);
+	}
 }
