@@ -25,14 +25,16 @@ struct ColourReference
 	Vec3f bgr;
 };
 
-const vector<ColourReference> colourReferences = {
+/* const vector<ColourReference> colourReferences = {
 	{"Red", Vec3f(64, 60, 227)},
 	{"Blue", Vec3f(101, 37, 29)},
 	{"Purple", Vec3f(83, 38, 58)},
 	{"Yellow", Vec3f(34, 171, 242)},
 	{"Green", Vec3f(57, 82, 64)},
 	{"Orange", Vec3f(51, 106, 219)},
-	{"Brown", Vec3f(43, 42, 101)}};
+	{"Brown", Vec3f(43, 42, 101)}}; */
+
+vector<ColourReference> colourReferences;
 
 vector<ImageInfo>
 	images = {
@@ -1276,6 +1278,65 @@ void MyApplication()
 
 		float red =
 			centres.at<float>(dominantCluster, 2);
+
+		// Transform the detected ball centre
+		vector<Point2f> transformedDetected = {originalCentre};
+		vector<Point2f> transformedCentreGT;
+
+		perspectiveTransform(
+			transformedDetected,
+			transformedCentreGT,
+			perspective_matrix);
+
+		// Find the nearest training ground truth
+		double minDistance = DBL_MAX;
+		int nearestIndex = -1;
+
+		for (int j = 0; j < images[0].pool_balls.size(); j++)
+		{
+			const PoolBall &gt = images[0].pool_balls[j];
+
+			Point2f gtCentre(gt.position.column, gt.position.row);
+
+			double distance = norm(
+				transformedCentreGT[0] - gtCentre);
+
+			if (distance < minDistance)
+			{
+				minDistance = distance;
+				nearestIndex = j;
+			}
+		}
+
+		// Save the BGR reference
+		if (nearestIndex != -1 && minDistance < 23)
+		{
+			string label =
+				images[0].pool_balls[nearestIndex].colour.value_or("Unknown");
+
+			if (label != "White" && label != "Black")
+			{
+				string colourName = label.substr(0, label.find(' '));
+
+				// Only store one reference for each colour
+				bool exists = false;
+
+				for (const auto &reference : colourReferences)
+				{
+					if (reference.name == colourName)
+					{
+						exists = true;
+						break;
+					}
+				}
+
+				if (!exists)
+				{
+					colourReferences.push_back({colourName,
+												Vec3f(blue, green, red)});
+				}
+			}
+		}
 
 		cout << "\nCircle " << i << endl;
 		cout << "Ball Type: " << ballType << endl;
