@@ -1413,9 +1413,6 @@ void MyApplication()
 
 	// Calculating and outputting the overall metrics.
 	cout << "\nOVERALL CONFUSION MATRIX METRICS\n";
-	calculateConfusionMetrics(
-		overallConfusionMatrix,
-		ballLabels);
 	computeFinalMetrics(
 		overallConfusionMatrix,
 		totalUnmatchedFalsePositives);
