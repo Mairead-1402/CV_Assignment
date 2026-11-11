@@ -1,5 +1,13 @@
 ﻿#include "Utilities.h"
 #include <map>
+#include <vector>
+#include <string>
+#include <tuple>
+#include <algorithm>
+#include <cfloat>
+
+using namespace std;
+using namespace cv;
 
 // Coordinate data structure to save the centre points of the pool balls
 struct Coordinate
