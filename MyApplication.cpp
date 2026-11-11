@@ -9,6 +9,8 @@
 using namespace std;
 using namespace cv;
 
+//Student Name: Mairead O'Dwyer
+
 // Coordinate data structure to save the centre points of the pool balls
 struct Coordinate
 {

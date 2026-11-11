@@ -25,9 +25,9 @@ This is the GitHub repository link: \url{https://github.com/Mairead-1402/CV_Assi
 \section{Theory of Processing}
 \subsection{Detection of the pool balls}
 
-The pool balls were detected using Hough Circle transform on the original, untransformed images as they are mainly circular in shape and transforming the image may make the balls appear more elliptical. 
+The pool balls were detected using Hough Circle Transform on the original, untransformed images as they are mainly circular in shape and transforming the image may make the balls appear more elliptical. 
 Hough Circle requires greyscaled images as it focuses on the edges of the image rather than the colour. Each image was converted to greyscale before being smoothed [5]. 
-Smoothing removes noise within the image and blurring some edges within the image. Guassian blurring was used as it blurs edges within the images [5]. This helps when trying to use Hough Circle transform on the pool balls as striped balls, when orientated in a certain way, can appear to have two circles within them, the circle of the ball and a white circle at the base or top of the ball. 
+Smoothing removes noise within the image and blurring some edges within the image. 5 X 5 Guassian blurring was used, with $\sigma = 1$, with as it blurs edges within the images [5]. This helps when trying to use Hough Circle transform on the pool balls as striped balls, when orientated in a certain way, can appear to have two circles within them, the circle of the ball and a white circle at the base or top of the ball. 
 \begin{figure}[H]
     \centering
     \begin{minipage}[b]{0.48\textwidth}
@@ -66,7 +66,7 @@ Hough Circle Transform was applied within each image to find circles within the 
             height=3cm,
             keepaspectratio
         ]{figures/CV_Fig4.png}
-        \caption{Training Image with types of balls detected}
+        \caption{Transformed Perspective of Table5.jpeg}
         \label{fig:fig3}
     \end{minipage}
     \hfill
@@ -89,7 +89,7 @@ A greedy algorithm was used to determine whether the balls were correctly found 
 where $x$ are the coordinates for the ground truth centers and $y$ are the coordinates for the detected circle. The detected circles' centre coordinates were transformed into the same geometric space as the ground truths to ensure accuracy. The transformation allows for 1mm $\approx 1$ pixel. The algorithm would match the balls after they were detected. It would go through all available ground truth coordinates and find the ground truth coordinate that has the smallest distance with the detected ball, provided that it also is less than the distance limit of 23 pixels. This limit was chosen as each pool ball is roughly 43mm in diameter, and once transformed, it would be $\approx43$ pixels. In order to account for cases where the centre of a ball might lie on the edge of another ball, the limit was 22 pixels.
 
 \subsection{Recognising the pool balls}
-The recognition implementation involved using HSV classification thresholds and K-means clustering to find the main colour within the ball to determine what ball it was. This allows for the main colours within the image to be found, using the Blue, Green, Red (BGR) colour space. 
+The recognition involved using HSV classification thresholds and K-means clustering to find the main colour within the ball to determine what ball it was. This allows for the main colours within the image to be found, using the Blue, Green, Red (BGR) colour space. 
 BGR allows for colours across all three channels to be considered for recognising the ball. Hue, Saturation and Value (HSV) was also used to help find the white and black pixels to help determine the white, black, striped and solid coloured balls. 
 A training image, "AllBalls.jpeg" was used to find the different thresholds for HSV and K-means clustering. The image was transformed geometrically to get a top-down view of the pool table as it would allow for balls to be more similar in size, making the area for the colour recognition to be more consistent. 
 K was set to 3 as it would create clusters for the coloured pixels within the ball and uses the dominant cluster. The centre of the circle along with 4 points on the circle's circumference were transformed geometrically to find a circle mask to fit the transformed balls. 
@@ -182,14 +182,14 @@ From the table above, the detection performs relatively well. Table6 performed t
 Another issue is that the pockets of the table sometimes get detected as a ball. This is most likely due to the circular shape of the pocket. One way to remove this error could be to use contour segmentation to find holes within the Hough Circles and if a certain number of holes are found, like the holes in the pocket netting, it is considered a pocket and thus ignored.
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/CV_Fig8.png}
         \caption{Detection on Table2.jpeg}
         \label{subfig:a}
     \end{subfigure}%
-    \\
-    \begin{subfigure}[b]{0.6\textwidth}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/CV_Fig9.png}
         \caption{Detection on Table6.jpeg}
@@ -302,10 +302,8 @@ The detection method was tuned and the recognition method was tuned on one image
 
 
 \section{References}
-1. Feature Detection, OpenCV, 2025, \\
-\url{https://docs.opencv.org/4.13.0/dd/d1a/group__imgproc__feature.html#ga47849c3be0d0406ad3ca45db65a25d2d}
-\\
-2. Classification: Accuracy, recall, precision, and related metrics, Google Developers, 2026, \url{https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall}
+1. Feature Detection, OpenCV, 2025, \url{https://docs.opencv.org/4.13.0/dd/d1a/group__imgproc__feature.html#ga47849c3be0d0406ad3ca45db65a25d2d} \\
+2. Classification: Accuracy, recall, precision, and related metrics, Google Developers, 2026, \url{https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall}\\
 3. F1 Score in Machine Learning, Geeks for Geeks, 2026, \url{https://www.geeksforgeeks.org/machine-learning/f1-score-in-machine-learning/}\\
 4. Understanding the Confusion Matrix in Machine Learning, Geeks for Geeks, 2026, \url{https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/}\\
 5. CSU44053, Computer Vision Slides, Dr Kenneth Dawson-Howe, Trinity College Dublin.
