@@ -12,7 +12,7 @@ struct Coordinate
 struct PoolBall
 {
 	Coordinate position;
-	std::optional<std::string> colour;
+	string colour;
 };
 
 // ImageInfo data structure to save the pool balls in each image
@@ -33,21 +33,21 @@ struct ColourReference
 vector<ColourReference> colourReferences;
 
 // Vector to store all the images names, pool ball coordinates and colours
-vector<ImageInfo>
-	images = {
-		{"AllBalls.jpeg", {{{253, 908}, "Yellow Solid"}, {{250, 959}, "Blue Solid"}, {{255, 1013}, "Red Solid"}, {{256, 1072}, "Purple Solid"}, {{254, 1132}, "Orange Solid"}, {{262, 1184}, "Green Solid"}, {{256, 1244}, "Brown Solid"}, {{253, 1307}, "Black"}, {{329, 901}, "Yellow Striped"}, {{330, 961}, "Blue Striped"}, {{335, 1013}, "Red Striped"}, {{336, 1067}, "Purple Striped"}, {{334, 1130}, "Orange Striped"}, {{345, 1187}, "Green Striped"}, {{342, 1245}, "Brown Striped"}, {{293, 797}, "White"}}},
 
-		{"Table1.jpeg", {{{309, 1092}, std::nullopt}, {{429, 1212}, std::nullopt}, {{383, 1131}, std::nullopt}, {{335, 1050}, std::nullopt}, {{285, 1211}, std::nullopt}, {{261, 1170}, std::nullopt}, {{352, 1173}, std::nullopt}, {{331, 1132}, std::nullopt}, {{240, 1210}, std::nullopt}, {{310, 1170}, std::nullopt}, {{407, 1169}, std::nullopt}, {{281, 1135}, std::nullopt}, {{374, 1212}, std::nullopt}, {{360, 1091}, std::nullopt}, {{331, 1213}, std::nullopt}, {{288, 29}, std::nullopt}}},
+vector<ImageInfo> images = {
+	{"AllBalls.jpeg", {{{253, 908}, "Yellow Solid"}, {{250, 959}, "Blue Solid"}, {{255, 1013}, "Red Solid"}, {{256, 1072}, "Purple Solid"}, {{254, 1132}, "Orange Solid"}, {{262, 1184}, "Green Solid"}, {{256, 1244}, "Brown Solid"}, {{253, 1307}, "Black"}, {{329, 901}, "Yellow Striped"}, {{330, 961}, "Blue Striped"}, {{335, 1013}, "Red Striped"}, {{336, 1067}, "Purple Striped"}, {{334, 1130}, "Orange Striped"}, {{345, 1187}, "Green Striped"}, {{342, 1245}, "Brown Striped"}, {{293, 797}, "White"}}},
 
-		{"Table2.jpeg", {{{282, 1103}, std::nullopt}, {{620, 1224}, std::nullopt}, {{391, 1121}, std::nullopt}, {{315, 1046}, std::nullopt}, {{310, 1305}, std::nullopt}, {{202, 621}, std::nullopt}, {{361, 1173}, std::nullopt}, {{331, 1132}, std::nullopt}, {{177, 725}, std::nullopt}, {{185, 1269}, std::nullopt}, {{665, 798}, std::nullopt}, {{296, 438}, std::nullopt}, {{53, 1235}, std::nullopt}, {{362, 1090}, std::nullopt}, {{399, 1205}, std::nullopt}, {{507, 1169}, std::nullopt}}},
+	{"Table1.jpeg", {{{309, 1092}, ""}, {{429, 1212}, ""}, {{383, 1131}, ""}, {{335, 1050}, ""}, {{285, 1211}, ""}, {{261, 1170}, ""}, {{352, 1173}, ""}, {{331, 1132}, ""}, {{240, 1210}, ""}, {{310, 1170}, ""}, {{407, 1169}, ""}, {{281, 1135}, ""}, {{374, 1212}, ""}, {{360, 1091}, ""}, {{331, 1213}, ""}, {{288, 29}, ""}}},
 
-		{"Table3.jpeg", {{{23, 908}, std::nullopt}, {{616, 1224}, std::nullopt}, {{447, 1199}, std::nullopt}, {{336, 29}, std::nullopt}, {{305, 1406}, std::nullopt}, {{210, 621}, std::nullopt}, {{260, 1294}, std::nullopt}, {{226, 1252}, std::nullopt}, {{177, 725}, std::nullopt}, {{171, 1270}, std::nullopt}, {{665, 798}, std::nullopt}, {{249, 351}, std::nullopt}, {{53, 1233}, std::nullopt}, {{169, 901}, std::nullopt}, {{399, 1201}, std::nullopt}, {{434, 29}, std::nullopt}}},
+	{"Table2.jpeg", {{{282, 1103}, ""}, {{620, 1224}, ""}, {{391, 1121}, ""}, {{315, 1046}, ""}, {{310, 1305}, ""}, {{202, 621}, ""}, {{361, 1173}, ""}, {{331, 1132}, ""}, {{177, 725}, ""}, {{185, 1269}, ""}, {{665, 798}, ""}, {{296, 438}, ""}, {{53, 1235}, ""}, {{362, 1090}, ""}, {{399, 1205}, ""}, {{507, 1169}, ""}}},
 
-		{"Table4.jpeg", {{{23, 908}, std::nullopt}, {{546, 1407}, std::nullopt}, {{444, 1204}, std::nullopt}, {{305, 1406}, std::nullopt}, {{210, 621}, std::nullopt}, {{260, 1294}, std::nullopt}, {{226, 1252}, std::nullopt}, {{181, 724}, std::nullopt}, {{171, 1270}, std::nullopt}, {{665, 798}, std::nullopt}, {{249, 351}, std::nullopt}, {{58, 1231}, std::nullopt}, {{169, 901}, std::nullopt}, {{399, 1201}, std::nullopt}, {{88, 1392}, std::nullopt}}},
+	{"Table3.jpeg", {{{23, 908}, ""}, {{616, 1224}, ""}, {{447, 1199}, ""}, {{336, 29}, ""}, {{305, 1406}, ""}, {{210, 621}, ""}, {{260, 1294}, ""}, {{226, 1252}, ""}, {{177, 725}, ""}, {{171, 1270}, ""}, {{665, 798}, ""}, {{249, 351}, ""}, {{53, 1233}, ""}, {{169, 901}, ""}, {{399, 1201}, ""}, {{434, 29}, ""}}},
 
-		{"Table5.jpeg", {{{535, 23}, std::nullopt}, {{546, 1407}, std::nullopt}, {{444, 1204}, std::nullopt}, {{305, 1406}, std::nullopt}, {{131, 25}, std::nullopt}, {{260, 1294}, std::nullopt}, {{226, 1252}, std::nullopt}, {{538, 72}, std::nullopt}, {{171, 1270}, std::nullopt}, {{665, 798}, std::nullopt}, {{249, 351}, std::nullopt}, {{169, 901}, std::nullopt}, {{399, 1201}, std::nullopt}, {{608, 26}, std::nullopt}}},
+	{"Table4.jpeg", {{{23, 908}, ""}, {{546, 1407}, ""}, {{444, 1204}, ""}, {{305, 1406}, ""}, {{210, 621}, ""}, {{260, 1294}, ""}, {{226, 1252}, ""}, {{181, 724}, ""}, {{171, 1270}, ""}, {{665, 798}, ""}, {{249, 351}, ""}, {{58, 1231}, ""}, {{169, 901}, ""}, {{399, 1201}, ""}, {{88, 1392}, ""}}},
 
-		{"Table6.jpeg", {{{535, 23}, std::nullopt}, {{477, 1364}, std::nullopt}, {{444, 1204}, std::nullopt}, {{305, 1406}, std::nullopt}, {{131, 25}, std::nullopt}, {{260, 1294}, std::nullopt}, {{226, 1252}, std::nullopt}, {{538, 72}, std::nullopt}, {{171, 1270}, std::nullopt}, {{249, 351}, std::nullopt}, {{169, 901}, std::nullopt}, {{399, 1201}, std::nullopt}, {{629, 947}, std::nullopt}}}};
+	{"Table5.jpeg", {{{535, 23}, ""}, {{546, 1407}, ""}, {{444, 1204}, ""}, {{305, 1406}, ""}, {{131, 25}, ""}, {{260, 1294}, ""}, {{226, 1252}, ""}, {{538, 72}, ""}, {{171, 1270}, ""}, {{665, 798}, ""}, {{249, 351}, ""}, {{169, 901}, ""}, {{399, 1201}, ""}, {{608, 26}, ""}}},
+
+	{"Table6.jpeg", {{{535, 23}, ""}, {{477, 1364}, ""}, {{444, 1204}, ""}, {{305, 1406}, ""}, {{131, 25}, ""}, {{260, 1294}, ""}, {{226, 1252}, ""}, {{538, 72}, ""}, {{171, 1270}, ""}, {{249, 351}, ""}, {{169, 901}, ""}, {{399, 1201}, ""}, {{629, 947}, ""}}}};
 
 // Vector to store the images and their pool ball information for testing the ball recognition
 vector<ImageInfo>
@@ -309,8 +309,8 @@ map<string, map<string, int>> overallConfusionMatrix;
 
 void MyApplication()
 {
-	char *file_location = "Media/Pool/";
-	char *pool_files[] = {
+	const char *file_location = "Media/Pool/";
+	const char *pool_files[] = {
 		"AllBalls.jpeg",
 		"Table1.jpeg",
 		"Table2.jpeg",
@@ -592,7 +592,8 @@ void MyApplication()
 		cout << "False Negatives: " << FN << endl;
 
 		// Computing the metrics of each image and displaying them
-		tuple metrics = computeMetrics(TP, FP, FN);
+		tuple<double, double, double> metrics =
+			computeMetrics(TP, FP, FN);
 		cout << "Precision: " << get<0>(metrics) << endl;
 		cout << "Recall: " << get<1>(metrics) << endl;
 		cout << "F1 Score: " << get<2>(metrics) << endl;
@@ -943,7 +944,7 @@ void MyApplication()
 		if (nearestIndex != -1 && minDistance < 23)
 		{
 			string label =
-				images[0].pool_balls[nearestIndex].colour.value_or("Unknown");
+				images[0].pool_balls[nearestIndex].colour;
 
 			if (label != "White" && label != "Black")
 			{
@@ -1328,8 +1329,7 @@ void MyApplication()
 				const PoolBall &groundTruth =
 					Testimages[i - 1].pool_balls[nearestIndex];
 
-				string actualLabel =
-					groundTruth.colour.value_or("Unknown");
+				string actualLabel = groundTruth.colour;
 
 				detectedConfusionMatrix[actualLabel][predictedLabel]++;
 				overallConfusionMatrix[actualLabel][predictedLabel]++;
@@ -1388,7 +1388,7 @@ void MyApplication()
 			if (!matched[m])
 			{
 				string actualLabel =
-					Testimages[i - 1].pool_balls[m].colour.value_or("Unknown");
+					Testimages[i - 1].pool_balls[m].colour;
 
 				overallConfusionMatrix[actualLabel]["Not Detected"]++;
 			}
