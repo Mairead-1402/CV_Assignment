@@ -1,48 +1,45 @@
 ﻿#include "Utilities.h"
 #include <map>
 
+// Coordinate data structure to save the centre points of the pool balls
 struct Coordinate
 {
 	int row;
 	int column;
 };
 
+// Poolball data structure to save the pool ball positions and colours
 struct PoolBall
 {
 	Coordinate position;
 	std::optional<std::string> colour;
 };
 
+// ImageInfo data structure to save the pool balls in each image
 struct ImageInfo
 {
 	string filename;
 	vector<PoolBall> pool_balls;
 };
 
+// Colour Reference data structure to save the colours from the k-means clustering and its name
 struct ColourReference
 {
 	string name;
 	Vec3f bgr;
 };
 
-/* const vector<ColourReference> colourReferences = {
-	{"Red", Vec3f(64, 60, 227)},
-	{"Blue", Vec3f(101, 37, 29)},
-	{"Purple", Vec3f(83, 38, 58)},
-	{"Yellow", Vec3f(34, 171, 242)},
-	{"Green", Vec3f(57, 82, 64)},
-	{"Orange", Vec3f(51, 106, 219)},
-	{"Brown", Vec3f(43, 42, 101)}}; */
-
+// Vector to store the k-means colour references
 vector<ColourReference> colourReferences;
 
+// Vector to store all the images names, pool ball coordinates and colours
 vector<ImageInfo>
 	images = {
-		{"AllBalls.jpeg", {{{253, 908}, "Yellow Solid"}, {{250, 959}, "Blue Solid"}, {{255, 1013}, "Red Solid"}, {{256, 1072}, "Purple Solid"}, {{254, 1132}, "Orange Solid"}, {{262, 1184}, "Green Solid"}, {{256, 1244}, "Brown Solid"}, {{253, 1307}, "Black"}, {{329, 901}, "Yellow Stripe"}, {{330, 961}, "Blue Stripe"}, {{335, 1013}, "Red Stripe"}, {{336, 1067}, "Purple Stripe"}, {{334, 1130}, "Orange Stripe"}, {{345, 1187}, "Green Stripe"}, {{342, 1245}, "Brown Stripe"}, {{293, 797}, "White"}}},
+		{"AllBalls.jpeg", {{{253, 908}, "Yellow Solid"}, {{250, 959}, "Blue Solid"}, {{255, 1013}, "Red Solid"}, {{256, 1072}, "Purple Solid"}, {{254, 1132}, "Orange Solid"}, {{262, 1184}, "Green Solid"}, {{256, 1244}, "Brown Solid"}, {{253, 1307}, "Black"}, {{329, 901}, "Yellow Striped"}, {{330, 961}, "Blue Striped"}, {{335, 1013}, "Red Striped"}, {{336, 1067}, "Purple Striped"}, {{334, 1130}, "Orange Striped"}, {{345, 1187}, "Green Striped"}, {{342, 1245}, "Brown Striped"}, {{293, 797}, "White"}}},
 
 		{"Table1.jpeg", {{{309, 1092}, std::nullopt}, {{429, 1212}, std::nullopt}, {{383, 1131}, std::nullopt}, {{335, 1050}, std::nullopt}, {{285, 1211}, std::nullopt}, {{261, 1170}, std::nullopt}, {{352, 1173}, std::nullopt}, {{331, 1132}, std::nullopt}, {{240, 1210}, std::nullopt}, {{310, 1170}, std::nullopt}, {{407, 1169}, std::nullopt}, {{281, 1135}, std::nullopt}, {{374, 1212}, std::nullopt}, {{360, 1091}, std::nullopt}, {{331, 1213}, std::nullopt}, {{288, 29}, std::nullopt}}},
 
-		{"Table2.jpeg", {{{282, 1103}, std::nullopt}, {{620, 1224}, std::nullopt}, {{391, 1121}, std::nullopt}, {{310, 1046}, std::nullopt}, {{310, 1305}, std::nullopt}, {{202, 621}, std::nullopt}, {{361, 1173}, std::nullopt}, {{331, 1132}, std::nullopt}, {{177, 725}, std::nullopt}, {{185, 1269}, std::nullopt}, {{665, 798}, std::nullopt}, {{296, 438}, std::nullopt}, {{53, 1235}, std::nullopt}, {{362, 1090}, std::nullopt}, {{399, 1205}, std::nullopt}, {{507, 1169}, std::nullopt}}},
+		{"Table2.jpeg", {{{282, 1103}, std::nullopt}, {{620, 1224}, std::nullopt}, {{391, 1121}, std::nullopt}, {{315, 1046}, std::nullopt}, {{310, 1305}, std::nullopt}, {{202, 621}, std::nullopt}, {{361, 1173}, std::nullopt}, {{331, 1132}, std::nullopt}, {{177, 725}, std::nullopt}, {{185, 1269}, std::nullopt}, {{665, 798}, std::nullopt}, {{296, 438}, std::nullopt}, {{53, 1235}, std::nullopt}, {{362, 1090}, std::nullopt}, {{399, 1205}, std::nullopt}, {{507, 1169}, std::nullopt}}},
 
 		{"Table3.jpeg", {{{23, 908}, std::nullopt}, {{616, 1224}, std::nullopt}, {{447, 1199}, std::nullopt}, {{336, 29}, std::nullopt}, {{305, 1406}, std::nullopt}, {{210, 621}, std::nullopt}, {{260, 1294}, std::nullopt}, {{226, 1252}, std::nullopt}, {{177, 725}, std::nullopt}, {{171, 1270}, std::nullopt}, {{665, 798}, std::nullopt}, {{249, 351}, std::nullopt}, {{53, 1233}, std::nullopt}, {{169, 901}, std::nullopt}, {{399, 1201}, std::nullopt}, {{434, 29}, std::nullopt}}},
 
@@ -52,6 +49,7 @@ vector<ImageInfo>
 
 		{"Table6.jpeg", {{{535, 23}, std::nullopt}, {{477, 1364}, std::nullopt}, {{444, 1204}, std::nullopt}, {{305, 1406}, std::nullopt}, {{131, 25}, std::nullopt}, {{260, 1294}, std::nullopt}, {{226, 1252}, std::nullopt}, {{538, 72}, std::nullopt}, {{171, 1270}, std::nullopt}, {{249, 351}, std::nullopt}, {{169, 901}, std::nullopt}, {{399, 1201}, std::nullopt}, {{629, 947}, std::nullopt}}}};
 
+// Vector to store the images and their pool ball information for testing the ball recognition
 vector<ImageInfo>
 	Testimages = {
 		{"Table1.jpeg", {{{309, 1092}, "Yellow Solid"}, {{429, 1212}, "Blue Solid"}, {{383, 1131}, "Red Solid"}, {{335, 1050}, "Purple Solid"}, {{285, 1211}, "Orange Solid"}, {{261, 1170}, "Green Solid"}, {{352, 1173}, "Brown Solid"}, {{331, 1132}, "Black"}, {{240, 1210}, "Yellow Striped"}, {{310, 1170}, "Blue Striped"}, {{407, 1169}, "Red Striped"}, {{281, 1135}, "Purple Striped"}, {{374, 1212}, "Orange Striped"}, {{360, 1091}, "Green Striped"}, {{331, 1213}, "Brown Striped"}, {{288, 29}, "White"}}},
@@ -66,45 +64,25 @@ vector<ImageInfo>
 
 		{"Table6.jpeg", {{{535, 23}, "Yellow Solid"}, {{477, 1364}, "Blue Solid"}, {{444, 1204}, "Red Solid"}, {{305, 1406}, "Orange Solid"}, {{131, 25}, "Green Solid"}, {{260, 1294}, "Brown Solid"}, {{226, 1252}, "Black"}, {{538, 72}, "Yellow Striped"}, {{171, 1270}, "Blue Striped"}, {{249, 351}, "Purple Striped"}, {{169, 901}, "Green Striped"}, {{399, 1201}, "Brown Striped"}, {{629, 947}, "White"}}}};
 
-string classifyColour(double hue, double lightness)
-{
-	if (hue > 175 or hue < 5)
-	{
-		if (lightness < 100)
-		{
-			return "Brown";
-		}
-		else
-		{
-			return "Red";
-		}
-	}
-	else if (hue >= 5 and hue < 15)
-	{
-		return "Orange";
-	}
-	else if (hue >= 15 and hue < 40)
-	{
-		return "Yellow";
-	}
-	else if (hue >= 40 and hue <= 90)
-	{
-		return "Green";
-	}
-	else if (hue > 90 and hue <= 125)
-	{
-		return "Blue";
-	}
-	else if (hue > 125 and hue <= 140)
-	{
-		return "Purple";
-	}
-	else
-	{
-		return "Colour Unknown";
-	}
-}
-
+// Vector of ball labels for confusion matrix
+vector<string> ballLabels = {
+	"White",
+	"Yellow Solid",
+	"Blue Solid",
+	"Red Solid",
+	"Purple Solid",
+	"Orange Solid",
+	"Green Solid",
+	"Brown Solid",
+	"Black",
+	"Yellow Striped",
+	"Blue Striped",
+	"Red Striped",
+	"Purple Striped",
+	"Orange Striped",
+	"Green Striped",
+	"Brown Striped"};
+// Helper function to compute precision, recall and F1 score
 tuple<double, double, double> computeMetrics(int TP, int FP, int FN)
 {
 
@@ -117,9 +95,10 @@ tuple<double, double, double> computeMetrics(int TP, int FP, int FN)
 	return {precision, recall, f1_score};
 }
 
+// Helper function to label the colour of the ball from K-means clustering
 string predictColour(
-	const cv::Vec3f &dominantBGR,
-	const std::string &ballType)
+	const Vec3f &dominantBGR,
+	const string &ballType)
 {
 	if (ballType == "White")
 		return "White";
@@ -148,13 +127,185 @@ string predictColour(
 	return predictedColour;
 }
 
-struct RecognitionResult
+// Helper function to get the number of the ball after it has been recognised
+int getBallNumber(const string &label)
 {
-	int correct = 0;
+	if (label == "White")
+		return 0;
+	if (label == "Black")
+		return 8;
+	if (label == "Unknown")
+		return -1;
+
+	map<string, int> colourNumbers = {
+		{"Yellow", 1},
+		{"Blue", 2},
+		{"Red", 3},
+		{"Purple", 4},
+		{"Orange", 5},
+		{"Green", 6},
+		{"Brown", 7}};
+
+	string colour = label.substr(0, label.find(' '));
+
+	if (colourNumbers.find(colour) == colourNumbers.end())
+		return -1;
+
+	int number = colourNumbers[colour];
+
+	if (label.find("Striped") != string::npos)
+		number += 8;
+
+	return number;
+}
+// Helper function to calculate metrics from a confusion matrix for each ball's recognition
+void calculateConfusionMetrics(
+	const map<string, map<string, int>> &confusionMatrix,
+	const vector<string> &ballLabels)
+{
+	int total = 0;
+
+	for (const auto &row : confusionMatrix)
+	{
+		for (const auto &column : row.second)
+		{
+			total += column.second;
+		}
+	}
+
+	for (const auto &ball : ballLabels)
+	{
+		int TP = 0;
+		int FP = 0;
+		int FN = 0;
+
+		// True positives
+		auto row = confusionMatrix.find(ball);
+
+		if (row != confusionMatrix.end())
+		{
+			auto cell = row->second.find(ball);
+
+			if (cell != row->second.end())
+				TP = cell->second;
+		}
+
+		// False positives and false negatives
+		for (const auto &actual : confusionMatrix)
+		{
+			for (const auto &predicted : actual.second)
+			{
+				if (actual.first != ball &&
+					predicted.first == ball)
+				{
+					FP += predicted.second;
+				}
+
+				if (actual.first == ball &&
+					predicted.first != ball)
+				{
+					FN += predicted.second;
+				}
+			}
+		}
+
+		int TN = total - TP - FP - FN;
+
+		// Formulas to calculate accuracy, precision, recall, specificity and F1 score
+
+		double accuracy = (total > 0)
+							  ? (double)(TP + TN) / total
+							  : 0.0;
+
+		double precision = (TP + FP > 0)
+							   ? (double)TP / (TP + FP)
+							   : 0.0;
+
+		double recall = (TP + FN > 0)
+							? (double)TP / (TP + FN)
+							: 0.0;
+
+		double specificity = (TN + FP > 0)
+								 ? (double)TN / (TN + FP)
+								 : 0.0;
+
+		double f1 = (precision + recall > 0)
+						? 2.0 * precision * recall / (precision + recall)
+						: 0.0;
+
+		cout << "\nBall: " << ball << endl;
+		cout << "TP: " << TP << endl;
+		cout << "FP: " << FP << endl;
+		cout << "FN: " << FN << endl;
+		cout << "TN: " << TN << endl;
+
+		cout << "Accuracy: " << accuracy * 100 << "%" << endl;
+		cout << "Precision: " << precision * 100 << "%" << endl;
+		cout << "Recall: " << recall * 100 << "%" << endl;
+		cout << "Specificity: " << specificity * 100 << "%" << endl;
+		cout << "F1 Score: " << f1 * 100 << "%\n"
+			 << endl;
+	}
+}
+
+// Helper function to compute overall evaluation metrics
+void computeFinalMetrics(
+	const map<string, map<string, int>> &confusionMatrix,
+	int unmatchedFalsePositives)
+{
+	int TP = 0;
 	int incorrect = 0;
-	int notDetected = 0;
-};
-map<string, RecognitionResult> kmrecognitionResults;
+	int missed = 0;
+
+	for (const auto &actual : confusionMatrix)
+	{
+		for (const auto &predicted : actual.second)
+		{
+			int count = predicted.second;
+
+			if (predicted.first == "Not Detected")
+			{
+				missed += count;
+			}
+			else if (actual.first == predicted.first)
+			{
+				TP += count;
+			}
+			else
+			{
+				incorrect += count;
+			}
+		}
+	}
+
+	int FP = incorrect + unmatchedFalsePositives;
+	int FN = incorrect + missed;
+
+	double precision = (TP + FP > 0)
+						   ? (double)TP / (TP + FP)
+						   : 0.0;
+
+	double recall = (TP + FN > 0)
+						? (double)TP / (TP + FN)
+						: 0.0;
+
+	double f1 = (precision + recall > 0)
+					? 2.0 * precision * recall / (precision + recall)
+					: 0.0;
+
+	cout << "\nOverall Method Evaluation\n";
+	cout << "True Positives: " << TP << endl;
+	cout << "False Positives: " << FP << endl;
+	cout << "False Negatives: " << FN << endl;
+	cout << "Precision: " << precision << endl;
+	cout << "Recall: " << recall << endl;
+	cout << "F1 Score: " << f1 << endl;
+}
+// Map to create a confusion matrix for detected balls for colour recognition
+map<string, map<string, int>> detectedConfusionMatrix;
+
+// Map to create a confusin matrix for recognised and unrecognised balls
+map<string, map<string, int>> overallConfusionMatrix;
 
 void MyApplication()
 {
@@ -201,7 +352,9 @@ void MyApplication()
 		Point2f(1433, 0),
 		Point2f(1433, 682)};
 
-	// First Idea : Hough Circle Transform
+	Mat perspective_matrix = getPerspectiveTransform(source, destination);
+
+	// Detecting the balls:  Hough Circle Transform
 	// First: Greyscale the images
 	Mat *gs_images = new Mat[number_of_images];
 	for (int i = 0; i < number_of_images; i++)
@@ -211,7 +364,7 @@ void MyApplication()
 		waitKey(0);
 	}
 
-	// Next: Smooth the balls using Gaussian blur
+	// Next: Use Guassian blur to remove image noise
 	Mat *bl_images = new Mat[number_of_images];
 	for (int i = 0; i < number_of_images; i++)
 	{
@@ -220,11 +373,10 @@ void MyApplication()
 		waitKey(0);
 	}
 
-	int distancelimit = 23;
-	vector<Vec3f> tsCircles;
-	vector<Point2f> tsDetectedCircles;
-	vector<Vec3f> tsTruePositiveCircles;
+	// Maxmimum distance between a ground truth centre and a detect centre
+	int distancelimit = 22;
 
+	// Variables to store average number of true positives, false positives, false negatives and average precision, recall and F1 score
 	double avTP = 0;
 	double avFP = 0;
 	double avFN = 0;
@@ -232,21 +384,32 @@ void MyApplication()
 	double avR = 0;
 	double avF1 = 0;
 
+	// Matrix to store the transformed images
+	Mat *tf_images = new Mat[number_of_images];
+
+	// Vector to store the detected circles in each image
+	vector<vector<Vec3f>> allDetectedCircles(number_of_images);
 	// Hough Circle Transform
 	for (int i = 0; i < number_of_images; i++)
 	{
+
 		Mat displayImage = pool_image[i].clone();
 		Mat displayImage2 = pool_image[i].clone();
+
+		// Vector to store the detected circles
 		vector<Vec3f> circles;
+
+		// Hough Circle Transform performed on the Guassian blurred greyscale image
 		cv::HoughCircles(
 			bl_images[i],
 			circles,
 			cv::HOUGH_GRADIENT,
 			1, 25, 65, 15, 20, 24);
-		if (i == 0)
-		{
-			tsCircles = circles;
-		}
+
+		// Saving the detecting circles into its vector
+		allDetectedCircles[i] = circles;
+
+		// Vectors for the detected centresa and their transformed coordinates
 		vector<Point2f> detectedCenters(circles.size());
 		vector<Point2f> tfCenters(circles.size());
 
@@ -283,23 +446,23 @@ void MyApplication()
 				LINE_AA);
 		}
 
-		imshow("Hough Transform Circles:", displayImage);
+		imshow("Hough Transform Circles:", displayImage2);
 		waitKey(0);
 
+		// Variables to store the number of true positive, true negative and false positive detections in the image
 		double TP = 0;
 		double FN = 0;
 		double FP = 0;
 
-		Mat perspective_matrix = getPerspectiveTransform(source, destination);
+		// Transforming the image
+		warpPerspective(pool_image[i], tf_images[i], perspective_matrix, Size(1433, 682));
+		imshow("Transformed Image: ", tf_images[i]);
+
+		// Transforming the detected centres into the same geometric space as the ground truths
 		perspectiveTransform(detectedCenters, tfCenters, perspective_matrix);
-		int tpIndex = 0;
-		if (i == 0)
-		{
-			tsDetectedCircles = tfCenters;
-			tsTruePositiveCircles.resize(circles.size());
-		}
 		vector<Point2f> groundTruthCenters(images[i].pool_balls.size());
 
+		// Vector to keep track of the matched ground truths
 		vector<bool> matched(groundTruthCenters.size(), false);
 
 		for (int j = 0; j < images[i].pool_balls.size(); j++)
@@ -308,21 +471,14 @@ void MyApplication()
 			groundTruthCenters[j] = Point2f(pool_ball.position.column, pool_ball.position.row);
 		}
 
+		// Inverse matrix to display false negatives on original image
 		Mat inverseH = perspective_matrix.inv();
-
-		vector<Point2f> transformedGT;
-
-		for (const auto &gt : groundTruthCenters)
-		{
-			transformedGT.emplace_back(gt.x, gt.y);
-		}
 
 		vector<Point2f> originalGT;
 
-		perspectiveTransform(
-			transformedGT,
-			originalGT,
-			inverseH);
+		perspectiveTransform(groundTruthCenters, originalGT, inverseH);
+
+		// Finding the nearest available ground truth for the detected circle centre
 		for (int k = 0; k < tfCenters.size(); k++)
 		{
 			Point2f dc = tfCenters[k];
@@ -347,39 +503,60 @@ void MyApplication()
 					nearestIndex = m;
 				}
 			}
+
+			// Displaying the detected centre, the nearest ground truth and the distance between them
+			cout << "Detected Centre: ("
+				 << dc.x << ", " << dc.y << ")" << endl;
+
+			if (nearestIndex != -1)
+			{
+				Point2f gt = groundTruthCenters[nearestIndex];
+
+				cout << "Ground Truth Centre: ("
+					 << gt.x << ", " << gt.y << ")" << endl;
+
+				cout << "Distance: " << minDistance << endl;
+			}
+			else
+			{
+				cout << "Ground Truth Centre: None available" << endl;
+			}
+
+			cout << "------------------------" << endl;
+
+			// Matching the detected centre to the nearest ground truth centre
+			// Incrementing TP as matched detections and unmatched detections as false positives
+			// Displaying the true positive, false positive, and false negative circles on the image
 			if (nearestIndex != -1 && minDistance < distancelimit)
 			{
 				matched[nearestIndex] = true;
 				TP++;
 
-				cv::circle(
+				circle(
 					displayImage, Point(cvRound(detectedCenters[k].x), cvRound(detectedCenters[k].y)), cvRound(circles[k][2]),
 					cv::Scalar(0, 255, 0), 2);
 
-				cv::putText(
+				putText(
 					displayImage, "TP", Point(cvRound(detectedCenters[k].x), cvRound(detectedCenters[k].y)) + cv::Point(5, -10),
 					cv::FONT_HERSHEY_SIMPLEX, 0.5,
 					cv::Scalar(0, 255, 0), 2);
-
-				if (i == 0)
-				{
-					tsTruePositiveCircles[tpIndex] = circles[k];
-					tpIndex++;
-				}
 			}
 			else
 			{
 				FP++;
-				cv::circle(
+				circle(
 					displayImage, Point(cvRound(detectedCenters[k].x), cvRound(detectedCenters[k].y)), 15,
 					cv::Scalar(0, 0, 255), 2);
 
-				cv::putText(
+				putText(
 					displayImage, "FP", Point(cvRound(detectedCenters[k].x), cvRound(detectedCenters[k].y)) + cv::Point(5, -10),
 					cv::FONT_HERSHEY_SIMPLEX, 0.5,
 					cv::Scalar(0, 0, 255), 2);
 			}
 		}
+
+		// if there are any unmatched ground truths, they are recorded and displayed
+		//  as false negatives
 		for (int m = 0; m < matched.size(); m++)
 		{
 			if (!matched[m])
@@ -401,11 +578,7 @@ void MyApplication()
 					cv::Scalar(255, 0, 0), 2);
 			}
 		}
-		if (i == 0)
-		{
-			tsTruePositiveCircles.resize(tpIndex);
-		}
-
+		// Adding the true positives, false positives and false negatives to the average count of each
 		if (i != 0)
 		{
 			avTP = avTP + TP;
@@ -413,24 +586,31 @@ void MyApplication()
 			avFN = avFN + FN;
 		}
 
+		// Displaying the amount of  false positive, false negative and true positive in each image
 		cout << "True positives: " << TP << endl;
 		cout << "False positives: " << FP << endl;
 		cout << "False Negatives: " << FN << endl;
-		tuple metrics = computeMetrics(TP, FP, FN);
 
+		// Computing the metrics of each image and displaying them
+		tuple metrics = computeMetrics(TP, FP, FN);
 		cout << "Precision: " << get<0>(metrics) << endl;
 		cout << "Recall: " << get<1>(metrics) << endl;
 		cout << "F1 Score: " << get<2>(metrics) << endl;
+
+		// Adding to average precision, recall and f1 score
 		if (i != 0)
 		{
 			avP = avP + get<0>(metrics);
 			avR = avR + get<1>(metrics);
 			avF1 = avF1 + get<2>(metrics);
 		}
+
+		// Displaying the Hough Circles on the image
 		imshow("Hough Transform Circles:", displayImage);
 		waitKey(0);
 	}
 
+	// Computing the average of the metrics used
 	avTP = (double)avTP / 6;
 	cout << "Average number of True Positives: " << avTP << endl;
 	avFP = (double)avFP / 6;
@@ -444,603 +624,35 @@ void MyApplication()
 	avF1 = (double)avF1 / 6;
 	cout << "Average F1 Score: " << avF1 << endl;
 
-	// Recognising the balls
-	// Use HLS to extract features from the AllBalls image then use it to classify other balls.
-	//
+	// Recognising the balls using K-means clustering
+
+	// Transforming the training image into the
 	Mat training_perspective;
-	Mat perspective_matrix = getPerspectiveTransform(source, destination);
 	warpPerspective(pool_image[0], training_perspective, perspective_matrix, Size(1433, 682));
-
-	// Tranform image into HLS
-	Mat hls_image;
-	cvtColor(training_perspective, hls_image, COLOR_BGR2HLS);
-	imshow("HLS Training Image", hls_image);
-	int num_circles = tsTruePositiveCircles.size();
-
-	for (int i = 0; i < num_circles; i++)
-	{
-		Vec3f c = tsTruePositiveCircles[i];
-		Point2f center(c[0], c[1]);
-
-		vector<Point2f> src_points = {center};
-		vector<Point2f> dst_points;
-
-		perspectiveTransform(src_points, dst_points, perspective_matrix);
-
-		Point2f tcenter = dst_points[0];
-
-		int radius = (c[2] * 1);
-
-		Mat mask = Mat::zeros(pool_image[0].size(), CV_8UC1);
-
-		circle(mask, center, radius, Scalar(255), -1);
-
-		Mat warpedMask;
-
-		warpPerspective(
-			mask,
-			warpedMask,
-			perspective_matrix,
-			hls_image.size(),
-			INTER_NEAREST);
-
-		Mat debugImage = training_perspective.clone();
-
-		vector<vector<Point>> contours;
-
-		findContours(
-			warpedMask.clone(),
-			contours,
-			RETR_EXTERNAL,
-			CHAIN_APPROX_SIMPLE);
-
-		drawContours(
-			debugImage,
-			contours,
-			-1,
-			Scalar(0, 0, 255),
-			2);
-
-		imshow("Ball Mask Position", debugImage);
-		waitKey(0);
-		int maskPixels = countNonZero(warpedMask);
-
-		if (maskPixels == 0)
-			continue;
-
-		Mat whiteMask;
-
-		inRange(
-			hls_image,
-			Scalar(0, 190, 0),
-			Scalar(179, 255, 180),
-			whiteMask);
-
-		bitwise_and(whiteMask, warpedMask, whiteMask);
-		Mat nonWhiteMask;
-		bitwise_not(whiteMask, nonWhiteMask);
-
-		imshow("White Mask", whiteMask);
-
-		double whitePercentage =
-			100.0 * countNonZero(whiteMask) / maskPixels;
-
-		Mat darkMask;
-
-		inRange(
-			hls_image,
-			Scalar(0, 0, 0),
-			Scalar(179, 65, 255),
-			darkMask);
-
-		bitwise_and(darkMask, warpedMask, darkMask);
-
-		imshow("Dark Mask", darkMask);
-
-		double darkPercentage =
-			100.0 * countNonZero(darkMask) / maskPixels;
-
-		Mat colourMask;
-
-		bitwise_and(warpedMask, nonWhiteMask, colourMask);
-
-		Mat saturatedMask;
-
-		inRange(
-			hls_image,
-			Scalar(0, 40, 80),
-			Scalar(179, 220, 255),
-			saturatedMask);
-
-		bitwise_and(colourMask, saturatedMask, colourMask);
-
-		imshow("Colour Mask", colourMask);
-
-		double hue;
-		double lightness;
-
-		int validPixels = countNonZero(colourMask);
-		if (validPixels > 0)
-		{
-			int channels[] = {0};
-			int histSize[] = {36};
-
-			float hueRange[] = {0, 180};
-			const float *ranges[] = {hueRange};
-
-			Mat hueHistogram;
-
-			calcHist(
-				&hls_image,
-				1,
-				channels,
-				colourMask,
-				hueHistogram,
-				1,
-				histSize,
-				ranges);
-
-			double maxValue = 0;
-			Point maxLocation;
-
-			minMaxLoc(
-				hueHistogram,
-				nullptr,
-				&maxValue,
-				nullptr,
-				&maxLocation);
-
-			int dominantHue = maxLocation.y * 5 + 2;
-
-			int histWidth = 720;
-			int histHeight = 400;
-			int binWidth = histWidth / histSize[0];
-
-			// Black background
-			Mat histImage(histHeight, histWidth,
-						  CV_8UC3, Scalar(0, 0, 0));
-
-			// Normalize histogram for display
-			Mat normalizedHist;
-			normalize(hueHistogram, normalizedHist,
-					  0, histHeight - 20, NORM_MINMAX);
-
-			// Draw colored bars
-			for (int i = 0; i < histSize[0]; i++)
-			{
-				int barHeight = cvRound(normalizedHist.at<float>(i));
-
-				// Hue at the center of this bin
-				int hue = i * 5 + 2;
-
-				// Convert HLS Hue to BGR for drawing
-				Mat hlsColor(1, 1, CV_8UC3,
-							 Scalar(hue, 128, 255));
-
-				Mat bgrColor;
-				cvtColor(hlsColor, bgrColor, COLOR_HLS2BGR);
-
-				Vec3b color = bgrColor.at<Vec3b>(0, 0);
-
-				rectangle(
-					histImage,
-					Point(i * binWidth, histHeight - barHeight),
-					Point((i + 1) * binWidth - 1, histHeight - 1),
-					Scalar(color[0], color[1], color[2]),
-					FILLED);
-			}
-
-			// Highlight dominant Hue bin
-			int dominantBin = maxLocation.y;
-			int dominantHeight =
-				cvRound(normalizedHist.at<float>(dominantBin));
-
-			rectangle(
-				histImage,
-				Point(dominantBin * binWidth,
-					  histHeight - dominantHeight),
-				Point((dominantBin + 1) * binWidth - 1,
-					  histHeight - 1),
-				Scalar(255, 255, 255),
-				2);
-
-			imshow("Hue Histogram", histImage);
-
-			hue = dominantHue;
-
-			Scalar meanHLS = mean(hls_image, colourMask);
-
-			lightness = meanHLS[1];
-
-			cout << "Ball " << i << endl;
-			cout << "White: " << whitePercentage << endl;
-			cout << "Dark: " << darkPercentage << endl;
-			cout << "Hue: " << dominantHue << endl;
-
-			cout << "Mean Hue: " << meanHLS[0] << endl;
-			cout << "Mean Lightness: " << meanHLS[1] << endl;
-			cout << "Mean Saturation: " << meanHLS[2] << endl;
-		}
-		else
-		{
-			/* cout << "No valid coloured pixels found\n"
-				 << endl; */
-		}
-
-		if (whitePercentage >= 60)
-		{
-			cout << "White" << endl;
-		}
-		else if (whitePercentage < 20 and darkPercentage >= 70)
-		{
-			cout << "Black" << endl;
-		}
-		else if (whitePercentage > 15 and whitePercentage < 60)
-		{
-			string colour = classifyColour(hue, lightness);
-			cout << colour << " Striped" << endl;
-		}
-		else
-		{
-			string colour = classifyColour(hue, lightness);
-			cout << colour << " Solid" << endl;
-		}
-	}
-
-	double dhTP = 0;
-	double dhFP = 0;
-	double dhFN = 0;
-	double dhP = 0;
-	double dhR = 0;
-	double dhF1 = 0;
-	double dhCA = 0;
-	// Check for all the other images
-	Mat *tf_images = new Mat[number_of_images - 1];
-	Mat *hls_images = new Mat[number_of_images - 1];
-	for (int i = 1; i < number_of_images; i++)
-	{
-
-		int cTP = 0;
-		int cFP = 0;
-		int cFN = 0;
-		int totalEvaluated = 0;
-		int correctPredictions = 0;
-		cout << "Image " << i << endl;
-		Mat displayImage = pool_image[i].clone();
-		vector<Vec3f> circles;
-		cv::HoughCircles(
-			bl_images[i],
-			circles,
-			cv::HOUGH_GRADIENT,
-			1, 25, 65, 15, 20, 24);
-		vector<Point2f> detectedCenters(circles.size());
-		vector<Point2f> tfCenters(circles.size());
-
-		for (int j = 0; j < circles.size(); j++)
-		{
-			Vec3f c = circles[j];
-			Point center(c[0], c[1]);
-			detectedCenters[j] = Point2f(c[0], c[1]);
-			vector<Point2f> tfCenters;
-			circle(
-				displayImage,
-				center,
-				1,
-				Scalar(0, 100, 100),
-				3,
-				LINE_AA);
-
-			int radius = c[2];
-
-			circle(
-				displayImage,
-				center,
-				radius,
-				Scalar(255, 0, 255),
-				3,
-				LINE_AA);
-		}
-		perspectiveTransform(
-			detectedCenters,
-			tfCenters,
-			perspective_matrix);
-		warpPerspective(pool_image[i], tf_images[i - 1], perspective_matrix, Size(1433, 682));
-		cvtColor(tf_images[i - 1], hls_images[i - 1], COLOR_BGR2HLS);
-
-		imshow("TF Image ", tf_images[i - 1]);
-		waitKey(0);
-		Mat &currentHLS = hls_images[i - 1];
-		int num_circles = circles.size();
-		vector<Point2f> groundTruthCenters(Testimages[i - 1].pool_balls.size());
-		vector<string> trueColours(Testimages[i - 1].pool_balls.size());
-
-		vector<bool> matched(groundTruthCenters.size(), false);
-
-		for (int j = 0; j < Testimages[i - 1].pool_balls.size(); j++)
-		{
-			PoolBall pool_ball = Testimages[i - 1].pool_balls[j];
-			groundTruthCenters[j] = Point2f(pool_ball.position.column, pool_ball.position.row);
-			trueColours[j] = pool_ball.colour.value_or("Unkown");
-		}
-		for (int k = 0; k < num_circles; k++)
-		{
-			Vec3f c = circles[k];
-			Point2f center(c[0], c[1]);
-
-			vector<Point2f> src_points = {center};
-			vector<Point2f> dst_points;
-
-			perspectiveTransform(src_points, dst_points, perspective_matrix);
-
-			Point2f tcenter = dst_points[0];
-
-			int radius = (c[2] * 1);
-
-			Mat mask = Mat::zeros(pool_image[i].size(), CV_8UC1);
-
-			circle(mask, center, radius, Scalar(255), -1);
-
-			Mat result;
-			bitwise_and(pool_image[i], pool_image[i], result, mask);
-
-			imshow("Result", result);
-			waitKey(0);
-			Mat warpedMask;
-
-			warpPerspective(
-				mask,
-				warpedMask,
-				perspective_matrix,
-				currentHLS.size(),
-				INTER_NEAREST);
-
-			Mat maskedTFImage;
-
-			bitwise_and(
-				tf_images[i - 1],
-				tf_images[i - 1],
-				maskedTFImage,
-				warpedMask);
-
-			imshow("Warped Mask", warpedMask);
-			imshow("Masked Transformed Image", maskedTFImage);
-			waitKey(0);
-
-			int maskPixels = countNonZero(warpedMask);
-
-			if (maskPixels == 0)
-				continue;
-
-			Mat whiteMask;
-
-			inRange(
-				currentHLS,
-				Scalar(0, 160, 0),
-				Scalar(179, 255, 80),
-				whiteMask);
-
-			bitwise_and(whiteMask, warpedMask, whiteMask);
-			Mat nonWhiteMask;
-			bitwise_not(whiteMask, nonWhiteMask);
-
-			double whitePercentage =
-				100.0 * countNonZero(whiteMask) / maskPixels;
-
-			Mat darkMask;
-
-			inRange(
-				currentHLS,
-				Scalar(0, 0, 0),
-				Scalar(179, 65, 255),
-				darkMask);
-
-			bitwise_and(darkMask, warpedMask, darkMask);
-
-			double darkPercentage =
-				100.0 * countNonZero(darkMask) / maskPixels;
-
-			Mat colourMask;
-
-			bitwise_and(warpedMask, nonWhiteMask, colourMask);
-
-			Mat saturatedMask;
-
-			inRange(
-				currentHLS,
-				Scalar(0, 40, 80),
-				Scalar(179, 220, 255),
-				saturatedMask);
-
-			bitwise_and(colourMask, warpedMask, colourMask);
-			bitwise_and(colourMask, saturatedMask, colourMask);
-
-			double colouredPercentage = 100.0 * countNonZero(colourMask) / maskPixels;
-
-			/* cout << "Coloured Percentage: " << colouredPercentage << endl; */
-
-			double hue;
-			double lightness;
-
-			string colour;
-			int validPixels = countNonZero(colourMask);
-			if (validPixels > 0)
-			{
-				int channels[] = {0};
-				int histSize[] = {36};
-
-				float hueRange[] = {0, 180};
-				const float *ranges[] = {hueRange};
-
-				Mat hueHistogram;
-
-				calcHist(
-					&currentHLS,
-					1,
-					channels,
-					colourMask,
-					hueHistogram,
-					1,
-					histSize,
-					ranges);
-
-				double maxValue = 0;
-				Point maxLocation;
-
-				minMaxLoc(
-					hueHistogram,
-					nullptr,
-					&maxValue,
-					nullptr,
-					&maxLocation);
-
-				int dominantHue = maxLocation.y * 5 + 2;
-
-				hue = dominantHue;
-
-				Scalar meanHLS = mean(currentHLS, colourMask);
-
-				lightness = meanHLS[1];
-
-				/* 	cout << "Ball " << k << endl;
-					cout << "White: " << whitePercentage << endl;
-					cout << "Dark: " << darkPercentage << endl;
-					cout << "Hue: " << dominantHue << endl;
-
-					cout << "Mean Hue: " << meanHLS[0] << endl;
-					cout << "Mean Lightness: " << meanHLS[1] << endl;
-					cout << "Mean Saturation: " << meanHLS[2] << endl; */
-			}
-			else
-			{
-				/* cout << "No valid coloured pixels found\n"
-				<< endl; */
-				cFP++;
-				continue;
-			}
-
-			if (whitePercentage >= 60)
-			{
-				colour = "White";
-			}
-			else if (whitePercentage < 20 and darkPercentage >= 70)
-			{
-				colour = "Black";
-			}
-			else if (whitePercentage >= 15 and whitePercentage < 60)
-			{
-				colour = classifyColour(hue, lightness) + " Striped";
-			}
-			else
-			{
-				colour = classifyColour(hue, lightness) + " Solid";
-			}
-
-			int tpIndex = 0;
-
-			Point2f dc = tfCenters[k];
-
-			double minDistance = 10000000000.0;
-			int nearestIndex = -1;
-
-			for (int m = 0; m < groundTruthCenters.size(); m++)
-			{
-				if (matched[m])
-				{
-					continue;
-				}
-
-				Point2f tfc = groundTruthCenters[m];
-
-				double pointdistance = cv::norm(tfc - dc);
-
-				if (pointdistance < minDistance)
-				{
-					minDistance = pointdistance;
-					nearestIndex = m;
-				}
-			}
-			if (nearestIndex != -1 && minDistance < distancelimit)
-			{
-				totalEvaluated++;
-				matched[nearestIndex] = true;
-				string trueColour = trueColours[nearestIndex];
-				cout << "Detected Colour: " << colour << endl;
-				cout << "True Colour: " << trueColour << endl;
-				if (trueColour == colour)
-				{
-					cTP++;
-					correctPredictions++;
-				}
-				else
-				{
-					cFP++;
-					cFN++;
-				}
-			}
-			else
-			{
-				cFP++;
-			}
-		}
-		for (int m = 0; m < matched.size(); m++)
-		{
-			if (!matched[m])
-			{
-				cFN++;
-			}
-		}
-		cout << "Image " << i << endl;
-		cout << "True positives: " << cTP << endl;
-		cout << "False positives: " << cFP << endl;
-		cout << "False Negatives: " << cFN << endl;
-		dhTP = dhTP + cTP;
-		dhFP = dhFP + cFP;
-		dhFN = dhFN + cFN;
-		tuple metrics = computeMetrics(cTP, cFP, cFN);
-
-		dhP = dhP + get<0>(metrics);
-		dhR = dhR + get<1>(metrics);
-		dhF1 = dhF1 + get<2>(metrics);
-		cout << "Precision: " << get<0>(metrics) << endl;
-		cout << "Recall: " << get<1>(metrics) << endl;
-		cout << "F1 Score: " << get<2>(metrics) << endl;
-
-		double colourAccuracy = 100 * correctPredictions / (double)totalEvaluated;
-		dhCA = dhCA + colourAccuracy;
-
-		cout << "Colour Accuracy: " << colourAccuracy << "%" << endl;
-	}
-
-	dhTP = dhTP / 6;
-	cout << "Average number of True Positives: " << dhTP << endl;
-	dhFP = dhFP / 6;
-	cout << "Average number of False Positives: " << dhFP << endl;
-	dhFN = dhFN / 6;
-	cout << "Average number of False Negatives: " << dhFN << endl;
-
-	dhP = dhP / 6;
-	cout << "Average Precision: " << dhP << endl;
-	dhR = dhR / 6;
-	cout << "Average Recall: " << dhR << endl;
-	dhF1 = dhF1 / 6;
-	cout << "Average F1 Score: " << dhF1 << endl;
-
-	dhCA = dhCA / 6;
-	cout << "Overall Colour Average " << dhCA << endl;
-
 	Mat ts_km_tf_image;
-
+	// Transforming the training image
 	warpPerspective(
 		pool_image[0],
 		ts_km_tf_image,
 		perspective_matrix,
 		Size(1433, 682));
 
+	Mat trainingDisplay = ts_km_tf_image.clone();
+
+	// Converting the transformed image into HSV
 	Mat hsv_image;
 	cvtColor(ts_km_tf_image, hsv_image, COLOR_BGR2HSV);
 
+	imshow("HSV Image", hsv_image);
+	waitKey(0);
+
+	// Number of clusters
 	int k = 3;
 
+	// Vector of training circles
+	const vector<Vec3f> &tsCircles = allDetectedCircles[0];
+
+	// Iterating through each training image circle to get its colour information
 	for (int i = 0; i < tsCircles.size(); i++)
 	{
 
@@ -1049,6 +661,7 @@ void MyApplication()
 		Point2f originalCentre(c[0], c[1]);
 		float originalRadius = c[2];
 
+		// Vector of points on the edge of the original detected circle and its centre
 		vector<Point2f> originalPoints = {
 			originalCentre,
 			Point2f(c[0] + originalRadius, c[1]),
@@ -1058,6 +671,7 @@ void MyApplication()
 
 		vector<Point2f> transformedPoints;
 
+		// Transforming the points
 		perspectiveTransform(
 			originalPoints,
 			transformedPoints,
@@ -1071,6 +685,7 @@ void MyApplication()
 
 		float radiusSum = 0.0f;
 
+		// Finding the transformed radius to create a mask
 		for (int j = 1; j < transformedPoints.size(); j++)
 		{
 			radiusSum += norm(
@@ -1078,8 +693,10 @@ void MyApplication()
 		}
 
 		float transformedRadius = radiusSum / 4.0f;
+		// Radius decreased to 90% of the transformed radius
 		int radius = cvRound(transformedRadius * 0.9f);
 
+		// Mask for the transformed ball
 		Mat mask = Mat::zeros(
 			ts_km_tf_image.size(),
 			CV_8UC1);
@@ -1091,9 +708,12 @@ void MyApplication()
 			Scalar(255),
 			-1);
 
+		// Vectors to keep track of pixels and coloured pixels
 		vector<Vec3f> pixels;
 		vector<Vec3f> colouredPixels;
 
+		// Counts to keep track of white, black, other pixels
+		//  and the amount of saturated pixels
 		int whiteCount = 0;
 		int blackCount = 0;
 		int colourCount = 0;
@@ -1101,6 +721,7 @@ void MyApplication()
 		int saturatedCount = 0;
 		Mat debugImage = ts_km_tf_image.clone();
 
+		// Displaying the mask on the transofrmed image
 		circle(
 			debugImage,
 			centre,
@@ -1111,6 +732,8 @@ void MyApplication()
 		imshow("Detected Circle", debugImage);
 		imshow("Circle Mask", mask);
 		waitKey(0);
+
+		// Creating a boundary rectangle to limit the area searched when finding the pixels
 		Rect bounds = Rect(
 						  centre.x - radius,
 						  centre.y - radius,
@@ -1118,6 +741,7 @@ void MyApplication()
 						  radius * 2 + 1) &
 					  Rect(0, 0, mask.cols, mask.rows);
 
+		// Looping through all pixels in the boundary rectangle
 		for (int y = bounds.y; y < bounds.y + bounds.height; y++)
 		{
 			for (int x = bounds.x; x < bounds.x + bounds.width; x++)
@@ -1125,8 +749,10 @@ void MyApplication()
 				if (mask.at<uchar>(y, x) == 0)
 					continue;
 
+				// Incrementing the total pixels
 				totalPixels++;
 
+				// Vectors for BGR channels and HSV
 				Vec3b bgr = ts_km_tf_image.at<Vec3b>(y, x);
 				Vec3b hsv = hsv_image.at<Vec3b>(y, x);
 				Vec3f pixel(
@@ -1136,6 +762,9 @@ void MyApplication()
 				);
 
 				pixels.push_back(pixel);
+
+				// Finding the saturation and value of each pixel
+				//  in order to find white, black, coloured and saturated pixels
 				int saturation = hsv[1];
 				int value = hsv[2];
 				if (saturation > 110 && value > 65)
@@ -1164,6 +793,8 @@ void MyApplication()
 		if (totalPixels == 0)
 			continue;
 
+		// Calculating the percentage for each count to help thresholding
+
 		double saturatedPercentage =
 			100.0 * saturatedCount / totalPixels;
 
@@ -1176,6 +807,7 @@ void MyApplication()
 		double colourPercentage =
 			100.0 * colourCount / totalPixels;
 
+		// Finding the mean HSV values of the mask
 		Scalar meanHSV = mean(hsv_image, mask);
 
 		double meanSaturation = meanHSV[1];
@@ -1183,6 +815,7 @@ void MyApplication()
 
 		string ballType = "Unknown";
 
+		// Using thresholds to classify each ball type
 		if (whitePercentage >= 80.0 &&
 			meanSaturation < 90.0 &&
 			meanBrightness > 135.0)
@@ -1206,6 +839,7 @@ void MyApplication()
 			ballType = "Solid";
 		}
 
+		// Outputting the results
 		cout << "Circle " << i << endl;
 		cout << "Ball Type: " << ballType << endl;
 		cout << "White Pixels: " << whiteCount << endl;
@@ -1225,6 +859,7 @@ void MyApplication()
 		cout << "Saturated Percentage: "
 			 << saturatedPercentage << "%" << endl;
 
+		// Finding the coloured pixels of the striped and solid balls
 		const vector<Vec3f> &selectedPixels =
 			(ballType == "Solid" || ballType == "Striped") && colouredPixels.size() >= k
 				? colouredPixels
@@ -1233,6 +868,7 @@ void MyApplication()
 		if (selectedPixels.size() < k)
 			continue;
 
+		// Taking samples from those pixels
 		Mat samples(
 			static_cast<int>(selectedPixels.size()),
 			3,
@@ -1247,6 +883,7 @@ void MyApplication()
 
 		Mat labels, centres;
 
+		// Performing K-means on the samples
 		kmeans(
 			samples,
 			k,
@@ -1261,15 +898,18 @@ void MyApplication()
 
 		vector<int> counts(k, 0);
 
+		// Finding the number of pixels that belong to each cluster
 		for (int m = 0; m < labels.rows; m++)
 		{
 			int cluster = labels.at<int>(m, 0);
 			counts[cluster]++;
 		}
 
+		// Finding the dominant cluster for each ball
 		int dominantCluster = static_cast<int>(
 			max_element(counts.begin(), counts.end()) - counts.begin());
 
+		// Finding the BGR values of the dominant cluster
 		float blue =
 			centres.at<float>(dominantCluster, 0);
 
@@ -1278,15 +918,6 @@ void MyApplication()
 
 		float red =
 			centres.at<float>(dominantCluster, 2);
-
-		// Transform the detected ball centre
-		vector<Point2f> transformedDetected = {originalCentre};
-		vector<Point2f> transformedCentreGT;
-
-		perspectiveTransform(
-			transformedDetected,
-			transformedCentreGT,
-			perspective_matrix);
 
 		// Find the nearest training ground truth
 		double minDistance = DBL_MAX;
@@ -1299,7 +930,7 @@ void MyApplication()
 			Point2f gtCentre(gt.position.column, gt.position.row);
 
 			double distance = norm(
-				transformedCentreGT[0] - gtCentre);
+				transformedCentre - gtCentre);
 
 			if (distance < minDistance)
 			{
@@ -1338,6 +969,7 @@ void MyApplication()
 			}
 		}
 
+		// Outputting the results
 		cout << "\nCircle " << i << endl;
 		cout << "Ball Type: " << ballType << endl;
 
@@ -1346,15 +978,13 @@ void MyApplication()
 		cout << "Dominant Red: " << red << endl;
 		cout << "Mean Saturation: " << meanHSV[1] << endl;
 		cout << "Mean Brightness: " << meanHSV[2] << endl;
+		cout << "White Percentage: " << whitePercentage << "%" << endl;
 		cout << "Black Percentage: " << blackPercentage << "%" << endl;
-		cout << "White: " << whitePercentage << "%" << endl;
-		cout << "Black: " << blackPercentage << "%" << endl;
-		cout << "Coloured: " << colourPercentage << "%" << endl;
-
-		cout << "------------------------" << endl;
+		cout << "Coloured Percentage: " << colourPercentage << "%" << endl;
+		cout << "Saturation Percentage: " << saturatedPercentage << "%" << endl;
 
 		putText(
-			ts_km_tf_image,
+			trainingDisplay,
 			ballType,
 			Point(centre.x - radius, centre.y - radius - 10),
 			FONT_HERSHEY_SIMPLEX,
@@ -1363,60 +993,55 @@ void MyApplication()
 			2);
 	}
 
-	imshow("Classified Pool Balls", ts_km_tf_image);
+	imshow("Classified Pool Balls", trainingDisplay);
 	waitKey(0);
 
-	double kmTP = 0;
-	double kmFP = 0;
-	double kmFN = 0;
-	double kmP = 0;
-	double kmR = 0;
-	double kmF1 = 0;
-	double kmCA = 0;
+	// Colour Recogniton on Test Images
+
+	// Count of the unmatched false positives
+	int totalUnmatchedFalsePositives = 0;
 
 	Mat *km_tf_images = new Mat[number_of_images - 1];
 	for (int i = 1; i < number_of_images; i++)
 	{
-		int cTP = 0;
-		int cFP = 0;
-		int cFN = 0;
-
-		int totalEvaluated = 0;
-		int correctPredictions = 0;
-
+		// Vector to match the circles with their ground truths
 		vector<bool> matched(
 			Testimages[i - 1].pool_balls.size(), false);
 
+		// Count of unmatched circles
+		int unmatchedCircles = 0;
+
 		Mat displayImage = pool_image[i].clone();
-		vector<Vec3f> circles;
-		cv::HoughCircles(
-			bl_images[i],
-			circles,
-			cv::HOUGH_GRADIENT,
-			1, 25, 65, 15, 20, 24);
 
-		int num_circles = circles.size();
+		// Reusing the circles detected in the detection stage
+		vector<Vec3f> &circles = allDetectedCircles[i];
+
 		vector<Point2f> groundTruthCenters(Testimages[i - 1].pool_balls.size());
-		vector<string> trueColours(Testimages[i - 1].pool_balls.size());
 
+		// Finding the ground truths for each image
 		for (int j = 0; j < Testimages[i - 1].pool_balls.size(); j++)
 		{
 			PoolBall pool_ball = Testimages[i - 1].pool_balls[j];
 			groundTruthCenters[j] = Point2f(pool_ball.position.column, pool_ball.position.row);
-			trueColours[j] = pool_ball.colour.value_or("Unkown");
 		}
 
+		// Transforming the original image
 		warpPerspective(
 			pool_image[i],
 			km_tf_images[i - 1],
 			perspective_matrix,
 			Size(1433, 682));
 
+		Mat recognitionDisplay = km_tf_images[i - 1].clone();
+
+		// Creating a HSV image of the transformed image
 		Mat hsv_image;
 		cvtColor(km_tf_images[i - 1], hsv_image, COLOR_BGR2HSV);
 
+		// Number of clusters
 		int k = 3;
 
+		// Iterating through each ball
 		for (int n = 0; n < circles.size(); n++)
 		{
 
@@ -1424,6 +1049,8 @@ void MyApplication()
 
 			Point2f originalCentre(c[0], c[1]);
 			float originalRadius = c[2];
+
+			// Finding points on the edge of the ball
 			vector<Point2f> originalPoints = {
 				originalCentre,
 				Point2f(c[0] + originalRadius, c[1]),
@@ -1431,6 +1058,7 @@ void MyApplication()
 				Point2f(c[0], c[1] + originalRadius),
 				Point2f(c[0], c[1] - originalRadius)};
 
+			// Transforming the edge points
 			vector<Point2f> transformedPoints;
 
 			perspectiveTransform(
@@ -1454,8 +1082,10 @@ void MyApplication()
 
 			float transformedRadius = radiusSum / 4.0f;
 
+			// Reducing the radius to 0.9 of its original size
 			int radius = cvRound(transformedRadius * 0.9f);
 
+			// Creating a mask
 			Mat mask = Mat::zeros(
 				km_tf_images[i - 1].size(),
 				CV_8UC1);
@@ -1467,9 +1097,9 @@ void MyApplication()
 				Scalar(255),
 				-1);
 
+			// Vectors and counts to keep track of different types of pixels
 			vector<Vec3f> pixels;
 			vector<Vec3f> colouredPixels;
-
 			int whiteCount = 0;
 			int blackCount = 0;
 			int colourCount = 0;
@@ -1487,6 +1117,8 @@ void MyApplication()
 			imshow("Detected Circle", debugImage);
 			imshow("Circle Mask", mask);
 			waitKey(0);
+
+			// Creating the boundary rectangle area
 			Rect bounds = Rect(
 							  centre.x - radius,
 							  centre.y - radius,
@@ -1494,6 +1126,7 @@ void MyApplication()
 							  radius * 2 + 1) &
 						  Rect(0, 0, mask.cols, mask.rows);
 
+			// Iterating through it
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++)
 			{
 				for (int x = bounds.x; x < bounds.x + bounds.width; x++)
@@ -1503,6 +1136,7 @@ void MyApplication()
 
 					totalPixels++;
 
+					// Vectors for the BGR colour space and HSV
 					Vec3b bgr = km_tf_images[i - 1].at<Vec3b>(y, x);
 					Vec3b hsv = hsv_image.at<Vec3b>(y, x);
 					Vec3f pixel(
@@ -1513,6 +1147,7 @@ void MyApplication()
 					pixels.push_back(pixel);
 					int saturation = hsv[1];
 					int value = hsv[2];
+					// Counting the number of pixels in each category
 					if (saturation > 110 && value > 65)
 					{
 						saturatedCount++;
@@ -1533,9 +1168,14 @@ void MyApplication()
 				}
 			}
 
+			// If any circle does not have enough pixels, it is considered unmatched
 			if (totalPixels == 0)
+			{
+				unmatchedCircles++;
 				continue;
+			}
 
+			// Calculating the percentages
 			double saturatedPercentage =
 				100.0 * saturatedCount / totalPixels;
 
@@ -1548,6 +1188,7 @@ void MyApplication()
 			double colourPercentage =
 				100.0 * colourCount / totalPixels;
 
+			// Finding the mean HSV values of the mask
 			Scalar meanHSV = mean(hsv_image, mask);
 
 			double meanSaturation = meanHSV[1];
@@ -1555,6 +1196,8 @@ void MyApplication()
 
 			string ballType = "Unknown";
 
+			// Using the thresholds from the training image to
+			// identify the ball type
 			if (whitePercentage >= 80.0 &&
 				meanSaturation < 90.0 &&
 				meanBrightness > 135.0)
@@ -1577,14 +1220,21 @@ void MyApplication()
 			{
 				ballType = "Solid";
 			}
+			// Vector to get the coloured pixels
 			const vector<Vec3f> &selectedPixels =
 				(ballType == "Solid" || ballType == "Striped") && colouredPixels.size() >= k
 					? colouredPixels
 					: pixels;
 
+			// if less than 3 pixels are available for kmeans,
+			//  do not perform recognition
 			if (selectedPixels.size() < k)
+			{
+				unmatchedCircles++;
 				continue;
+			}
 
+			// Create samples from the pixels
 			Mat samples(
 				static_cast<int>(selectedPixels.size()),
 				3,
@@ -1599,6 +1249,7 @@ void MyApplication()
 
 			Mat labels, centres;
 
+			// Perform kmeans on the samples
 			kmeans(
 				samples,
 				k,
@@ -1613,6 +1264,7 @@ void MyApplication()
 
 			vector<int> counts(k, 0);
 
+			// Finding the dominant cluster
 			for (int m = 0; m < labels.rows; m++)
 			{
 				int cluster = labels.at<int>(m, 0);
@@ -1631,10 +1283,11 @@ void MyApplication()
 			float red =
 				centres.at<float>(dominantCluster, 2);
 
-			std::string predictedColour =
+			// Classifying the colour based on the training data
+			string predictedColour =
 				predictColour(cv::Vec3f(blue, green, red), ballType);
 
-			std::string predictedLabel;
+			string predictedLabel;
 
 			if (ballType == "White" || ballType == "Black")
 			{
@@ -1649,6 +1302,7 @@ void MyApplication()
 				predictedLabel = "Unknown";
 			}
 
+			// Using the matching algorithm to match the circles with the ground truth
 			double minDistance = DBL_MAX;
 			int nearestIndex = -1;
 
@@ -1677,114 +1331,84 @@ void MyApplication()
 				string actualLabel =
 					groundTruth.colour.value_or("Unknown");
 
-				totalEvaluated++;
+				detectedConfusionMatrix[actualLabel][predictedLabel]++;
+				overallConfusionMatrix[actualLabel][predictedLabel]++;
 
-				cout << "Ground Truth: " << actualLabel << endl;
-				cout << "Predicted: " << predictedLabel << endl;
+				cout << "Ground Truth: " << actualLabel
+					 << " (" << getBallNumber(actualLabel) << ")" << endl;
+
+				cout << "Predicted: " << predictedLabel
+					 << " (" << getBallNumber(predictedLabel) << ")" << endl;
 
 				if (predictedLabel == actualLabel)
 				{
-					correctPredictions++;
-					cTP++;
-
 					cout << "Result: CORRECT" << endl;
-					kmrecognitionResults[actualLabel].correct++;
 				}
 				else
 				{
-					cFP++;
-					cFN++;
-
 					cout << "Result: INCORRECT" << endl;
-					kmrecognitionResults[actualLabel].incorrect++;
 				}
 			}
 			else
 			{
-				cFP++;
+				unmatchedCircles++;
 			}
 
+			// Getting the ball number based of its predicted classification
+			int ballNumber = getBallNumber(predictedLabel);
+
+			string displayLabel = to_string(ballNumber);
+
+			// Displaying the ball number and coloured circle on the transformed images
 			putText(
-				km_tf_images[i - 1],
-				predictedLabel,
-				Point(centre.x - 20, centre.y),
+				recognitionDisplay,
+				displayLabel,
+				Point(centre.x - 10, centre.y),
 				FONT_HERSHEY_SIMPLEX,
-				0.5,
-				Scalar(0, 123, 255),
+				0.75,
+				Scalar(255, 105, 180),
 				2);
-			imshow("Recognition Image", km_tf_images[i - 1]);
+
+			circle(
+				recognitionDisplay,
+				centre,
+				radius,
+				Scalar(blue, green, red),
+				2,
+				LINE_AA);
+
+			imshow("Recognition Image", recognitionDisplay);
 			waitKey(0);
 		}
+		// For any unmatched or unrecognised circles, it is counted
+		// as a false positive
+		totalUnmatchedFalsePositives += unmatchedCircles;
 		for (int m = 0; m < matched.size(); m++)
 		{
 			if (!matched[m])
 			{
-				cFN++;
-
 				string actualLabel =
 					Testimages[i - 1].pool_balls[m].colour.value_or("Unknown");
 
-				kmrecognitionResults[actualLabel].notDetected++;
+				overallConfusionMatrix[actualLabel]["Not Detected"]++;
 			}
 		}
-		if (totalEvaluated > 0)
-		{
-			kmTP = kmTP + cTP;
-			kmFP = kmFP + cFP;
-			kmFN = kmFN + cFN;
-
-			cout << "Image: " << i << endl;
-			cout << "True Positives: " << cTP << endl;
-			cout << "False Positives: " << cFP << endl;
-			cout << "False Negatives: " << cFN << endl;
-			tuple metrics = computeMetrics(cTP, cFP, cFN);
-			cout << "Precision: " << get<0>(metrics) << endl;
-			cout << "Recall: " << get<1>(metrics) << endl;
-			cout << "F1 Score: " << get<2>(metrics) << endl;
-
-			kmP = kmP + get<0>(metrics);
-			kmR = kmR + get<1>(metrics);
-			kmF1 = kmF1 + get<2>(metrics);
-			cout << "Total Evaluated: " << totalEvaluated << endl;
-			cout << "Correct Predictions: " << correctPredictions << endl;
-			double accuracy =
-				100.0 * correctPredictions / totalEvaluated;
-
-			cout << "Colour Accuracy: " << accuracy << "%" << endl;
-
-			kmCA = kmCA + accuracy;
-		}
 	}
 
-	kmTP = kmTP / 6;
-	cout << "Average number of True Positives: " << kmTP << endl;
-	kmFP = kmFP / 6;
-	cout << "Average number of False Positives: " << kmFP << endl;
-	kmFN = kmFN / 6;
-	cout << "Average number of False Negatives: " << kmFN << endl;
+	// Calculating and outputting the confusion matrix, its metrics for
+	//  each ball
+	cout << "\nRECOGNISED BALLS CONFUSION MATRIX METRICS\n";
 
-	kmP = kmP / 6;
-	cout << "Average Precision: " << kmP << endl;
-	kmR = kmR / 6;
-	cout << "Average Recall: " << kmR << endl;
-	kmF1 = kmF1 / 6;
-	cout << "Average F1 Score: " << kmF1 << endl;
+	calculateConfusionMetrics(
+		detectedConfusionMatrix,
+		ballLabels);
 
-	kmCA = kmCA / 6;
-	cout << "Overall Colour Average " << kmCA << endl;
-
-	for (const auto &[ball, result] : kmrecognitionResults)
-	{
-
-		int total = result.correct + result.incorrect;
-		double accuracy =
-			100.0 * result.correct / total;
-
-		cout << "Ball: " << ball << endl;
-		cout << "Correct: " << result.correct << endl;
-		cout << "Incorrect: " << result.incorrect << endl;
-		cout << "Detected Accuracy: " << accuracy << "%" << endl;
-		cout << "Not Detected: " << result.notDetected << endl;
-		cout << "----------------------" << endl;
-	}
+	// Calculating and outputting the overall metrics.
+	cout << "\nOVERALL CONFUSION MATRIX METRICS\n";
+	calculateConfusionMetrics(
+		overallConfusionMatrix,
+		ballLabels);
+	computeFinalMetrics(
+		overallConfusionMatrix,
+		totalUnmatchedFalsePositives);
 }
